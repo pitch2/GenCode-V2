@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Générateur de mot de passe</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #1f1f1f;
+            color: #ffffff;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .password {
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .copy-button {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 150px;
+            margin-top: 10px;
+        }
+        .clip-icon {
+            margin-left: 5px;
+            color: #007bff;
+            cursor: pointer;
+        }
+        .generated-password {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    
+        /* Styles pour les cases à cocher personnalisées */
+        .checkbox-container {
+            display: inline-block;
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+        }
+    
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+    
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #eee;
+            border-radius: 5px;
+        }
+    
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+    
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+    
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+    
+        .checkbox-container .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 6px;
+            height: 12px;
+            border: solid #000;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+        /* Fin des styles pour les cases à cocher */
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Générateur de mot de passe aléatoire</h1>
+    <form>
+        <label for="longueur">Choisissez la longueur du mot de passe :</label>
+        <input type="range" id="longueur" name="longueur" min="" max="20" value="10"><br>
+        <output for="longueur" id="output">10</output>
+        <br><br>
+        <div>
+            <input type="checkbox" id="uppercase" name="uppercase">
+            <label for="uppercase">Majuscules</label>
+        </div>
+        <div>
+            <input type="checkbox" id="lowercase" name="lowercase">
+            <label for="lowercase">Minuscules</label>
+        </div>
+        <div>
+            <input type="checkbox" id="numbers" name="numbers">
+            <label for="numbers">Chiffres</label>
+        </div>
+        <div>
+            <input type="checkbox" id="symbols" name="symbols">
+            <label for="symbols">Symboles</label>
+        </div>
+        <br><br>
+    </form>
+    <div class="password" id="passwordSection" style="display: none;">
+        <p class="generated-password" id="generatedPassword"></p>
+        <button class="copy-button" id="copyButton">Copier</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+    <script>
+        var slider = document.getElementById("longueur");
+        var output = document.getElementById("output");
+        var passwordSection = document.getElementById("passwordSection");
+        var generatedPassword = document.getElementById("generatedPassword");
+        var copyButton = document.getElementById("copyButton");
+
+        output.innerHTML = slider.value;
+
+        output.style.color = getColor(slider.value);
+
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+            output.style.color = getColor(this.value);
+            generatePassword(this.value);
+        }
+
+        function getColor(value) {
+            if (value <= 7) {
+                return "red";
+            } else if (value <= 10) {
+                return "orange";
+            } else {
+                return "green";
+            }
+        }
+
+        function generatePassword(length) {
+            var uppercase = document.getElementById("uppercase").checked;
+            var lowercase = document.getElementById("lowercase").checked;
+            var numbers = document.getElementById("numbers").checked;
+            var symbols = document.getElementById("symbols").checked;
+
+            var characters = '';
+            if (uppercase) characters += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (lowercase) characters += "abcdefghijklmnopqrstuvwxyz";
+            if (numbers) characters += "0123456789";
+            if (symbols) characters += "!@#$%^&*()_+~`|}{[]\:;?><,./-=";
+
+            if (characters === '') {
+                alert("Veuillez sélectionner au moins une option de complication.");
+                return;
+            }
+
+            var password = '';
+            for (var i = 0; i < length; i++) {
+                password += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            generatedPassword.innerText = password;
+            passwordSection.style.display = "block";
+        }
+
+        copyButton.addEventListener("click", function() {
+            var textArea = document.createElement("textarea");
+            textArea.value = generatedPassword.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            textArea.remove();
+            alert("Mot de passe copié !");
+        });
+    </script>
+</body>
+</html>
